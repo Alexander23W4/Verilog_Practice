@@ -42,3 +42,29 @@ endmodule
         实际上只能用 if / else 嵌套。
         */
 
+// ->   因为 if  elseif elseif... else整个一套本来就有先后关系, 所以可以不用ififif...嵌套
+
+// ->   使用 one-hot 状态编码的优势是: 对于FSM的实现, 可以更方便地使用过去推当下状态, 
+//      一般来说状态机更直观地方法肯定是条件法推next_state
+// e.g.
+/*
+module top_module(
+    input in,
+    input [3:0] state,
+    output [3:0] next_state,
+    output out); //
+
+    parameter A=0, B=1, C=2, D=3;
+
+    // State transition logic: Derive an equation for each state flip-flop.
+    assign next_state[A] = state[A] & ~in | state[C] & ~in;
+    assign next_state[B] = state[A] & in | state[B] & in | state[D] & in;
+    assign next_state[C] = state[B] & ~in | state[D] & ~in;
+    assign next_state[D] = state[C] & in;
+
+    // Output logic: 
+    assign out = (state[D] == 1);
+
+endmodule
+*/
+

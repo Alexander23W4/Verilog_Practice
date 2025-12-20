@@ -11,6 +11,11 @@ mind 2
 一般用在封装的小module上面, 充分发挥软件的灵活性, 实现各种算法
 特别是不必被计数器, 移位寄存, 级联等硬件层的东西束缚, 大胆用纯软实现
 
+mind 3
+组合module: input 控制量, data  output 控制量, data
+时序module: input 控制量, data  output 控制量(主)
+系统层:      MUX  AddressPick(AP) ...
+
 update:
 纯时序电路在系统设计里面是存在的
 1.模块化的组合电路设计->
@@ -19,3 +24,19 @@ update:
 
 总:
 硬件结构+纯软写法
+
+根本不存在高级语言纯软写法, 脱离硬件思想的verilog是不规范的, 也不直观, verilog能够写出硬件直观的简化算法
+
+时序模块alwyas@(clk)只负责"状态更新" 至于更新的量是什么, whatever组合, whatever控制, 全部写在外面
+
+fsm的状态思想: 分成4块: 状态定义  转移机制  时序操作  输出变量
+    *block只定义转移机制及规则, 绝对不能对任何时序量进行赋值, (比如state和其他状态辅助量是时序量, next不是)
+    clk blcok只进行各种量的update(包括状态和辅助量)
+
+FSM写状态转移机制的时候注意 控制量的作用优先级(几个控制量同时作用, 先听哪个)
+
+状态=过去+条件的写法不适合控制量具有优先级, 纠缠复杂的情况.
+可知one-hot编码不适合这种, 也绝对不适合状态太多的情况, 既占用reg硬件, 转移机制写起来也非常难受
+所以用状态=过去+条件的写法与one-hot编码的情况就是: 状态少 + 控制量少
+控制量多且有先后顺序的话就会成这样: always @(*) begin next[0] = (state[1] & bump_right & ~dig & ground) | (state[2] & ground & last_walk_dir[0] & ~(long > 20)); next[1] = (state[0] & bump_left & ~dig & ground) | (state[2] & ground & last_walk_dir[1] & ~(long > 20)); next[2] = (state[0] & ~ground) | (state[1] & ~ground) | (state[3] & ~ground); next[3] = (state[0] & dig & ground) | (state[1] & dig & ground); next[4] = (state[2] & (long > 20) & ground); next = |next ? next : state; end
+
