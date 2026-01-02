@@ -64,3 +64,79 @@ if   case  for    generate + for
 6 ---> System function:
 $bits(variable)          returns the size (in bits) of the variable
 */
+
+
+/*
+7 ---> Write Testbench:
+testbench测试脚本不是硬件, 只是脚本, initial块中就是脚本定义
+`timescale ../..
+initial forever
+
+创造时钟:
+`timescale 1ps/1ps
+module top_module ( );
+    reg clk;
+
+    // 1?? 实例化 DUT（实例名随意，这里用 u_dut）
+    dut u_dut (
+        .clk(clk)
+        // 其他端口如果有，可以先不连或补上
+    );
+
+    // 2?? 时钟产生：周期 10 ps，初始为 0，第一次上升沿
+    initial begin
+        clk = 1'b0;
+        forever #5 clk = ~clk;  // 5 ps 翻转一次 → 周期 10 ps
+    end
+endmodule
+
+创造波形:
+module top_module ( output reg A, output reg B );//
+
+    // generate input patterns here
+    initial begin
+        A = 0; B = 0;
+        #10 A = 1;
+        #5  B = 1;
+        #5 A = 0;
+        #20 B = 0;
+    end
+
+
+endmodule
+
+`timescale 1ps/1ps
+module top_module();
+    reg clk;
+    reg in;
+    reg [2:0] s;
+    wire out;
+    
+    q7 test_q7(.clk(clk), .in(in), .s(s), .out(out));
+    
+    initial begin
+        clk = 1'b0;
+        forever #5 clk = ~clk;
+    end
+    
+    initial begin
+        in = 1'b0;
+        s = 3'b010;
+        #10 s = 3'b110;
+        #10 begin
+            s = 3'b010;
+            in = 1;
+        end
+        #10 begin
+            s = 3'b111;
+            in = 0;
+        end
+        #10 begin
+            s = 3'b000;
+            in = 1;
+        end
+        #30 in = 0;
+    end
+
+endmodule
+*/
