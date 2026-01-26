@@ -4,26 +4,34 @@ module ramp1(
     output reg [3:0] q);
     
     parameter S0 = 0, S1 = 1, S2 = 2, S3 = 3;
+    reg [25:0] count;
     reg [1:0] state, next;
 
+
     always @(*) begin
-        case(state) 
-            S0 : next = S1;
-            S1 : next = S2;
-            S2 : next = S3;
-            S3 : next = S0;
-            default : next = S0;
-        endcase
+        if(count == 26'd50000000)begin
+            case(state) 
+                S0 : next = S1;
+                S1 : next = S2;
+                S2 : next = S3;
+                S3 : next = S0;
+                default : next = S0;
+            endcase
+        end
+        else begin
+            next = state;
+        end
     end
 
 
     always @(posedge clk) begin
-        if(areset) begin
-            state <= S0;
-        end
-        else begin
             state <= next;
-        end
+            if(count == 26'd50000000) begin
+                count <= 0;
+            end
+            else begin
+                count <= count + 1;
+            end
     end
 
     always @(*) begin
