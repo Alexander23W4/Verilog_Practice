@@ -143,3 +143,4 @@ end
 // parameter 本身在两个地方出现:
 // 1. module #(parameter XXX = xx) (input logic //...); endmodule; 
 // 2. parameter logic [5:0] STATEX = 6'b000001;     
+
